@@ -1,7 +1,7 @@
 # Back-end em Java Spring Boot 
 ### Easy - Residência de Software II
 
-📝 Descrição do Projeto
+##### 📝 Descrição do Projeto
 
 Este projeto consiste no desenvolvimento de um back-end em Java com Spring Boot para operar um chatbot funcional no WhatsApp. O objetivo é fornecer automação de atendimento e respostas rápidas para consultas financeiras, otimizando a gestão e a experiência do cliente.
 
@@ -9,19 +9,17 @@ O Problema: A necessidade de um back-end em Java capaz de operar um chatbot func
 
 A Solução: Um backend para Chatbot integrado ao ERP Omie, desenvolvido em Java Spring Boot, para atendimento automático. A solução permite a consulta de contas a pagar, receber e faturamento, otimizando o atendimento e a gestão financeira da empresa.
 
+##### 🎯 Personas
 
-🎯 Personas
-
-O projeto foi desenhado para atender às necessidades de dois perfis principais:
+##### O projeto foi desenhado para atender às necessidades de dois perfis principais:
 
 Pablo Rodrigues Gomes (Empresário): Busca reduzir custos operacionais, melhorar a experiência do usuário e escalar seu negócio através da automação de tarefas repetitivas e da obtenção de controle e visibilidade sobre as finanças.
 
 Carlos Henrique Alves (Atendente de Suporte Financeiro): Precisa de uma ferramenta para agilizar o atendimento, reduzir a sobrecarga de perguntas repetitivas e ter mais tempo para focar em casos complexos, melhorando seus indicadores de satisfação do cliente.
 
+##### ✨ Funcionalidades Principais
 
-✨ Funcionalidades Principais
-
-O chatbot foi projetado para seguir diversas jornadas, garantindo uma experiência de usuário completa e eficiente:
+##### O chatbot foi projetado para seguir diversas jornadas, garantindo uma experiência de usuário completa e eficiente:
 
 Boas-vindas e Orientação: Guia o usuário no primeiro contato com uma saudação e um menu de opções claro.
 
@@ -35,8 +33,7 @@ Otimização para Funcionários: Filtra as demandas, direcionando apenas os caso
 
 Backlog do Produto (Histórias de Usuário)
 
-
-🛠️ Especificação Técnica
+##### 🛠️ Especificação Técnica
 
 Linguagem: Java
 
