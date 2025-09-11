@@ -9,6 +9,7 @@ O Problema: A necessidade de um back-end em Java capaz de operar um chatbot func
 
 A Solução: Um backend para Chatbot integrado ao ERP Omie, desenvolvido em Java Spring Boot, para atendimento automático. A solução permite a consulta de contas a pagar, receber e faturamento, otimizando o atendimento e a gestão financeira da empresa.
 
+
 🎯 Personas
 
 O projeto foi desenhado para atender às necessidades de dois perfis principais:
@@ -17,21 +18,23 @@ Pablo Rodrigues Gomes (Empresário): Busca reduzir custos operacionais, melhorar
 
 Carlos Henrique Alves (Atendente de Suporte Financeiro): Precisa de uma ferramenta para agilizar o atendimento, reduzir a sobrecarga de perguntas repetitivas e ter mais tempo para focar em casos complexos, melhorando seus indicadores de satisfação do cliente.
 
+
 ✨ Funcionalidades Principais
 
 O chatbot foi projetado para seguir diversas jornadas, garantindo uma experiência de usuário completa e eficiente:
 
-👋 Boas-vindas e Orientação: Guia o usuário no primeiro contato com uma saudação e um menu de opções claro.
+Boas-vindas e Orientação: Guia o usuário no primeiro contato com uma saudação e um menu de opções claro.
 
-📈 Consultas Financeiras: Permite que os usuários consultem informações sobre contas a pagar, a receber e faturamento de forma rápida e automática.
+Consultas Financeiras: Permite que os usuários consultem informações sobre contas a pagar, a receber e faturamento de forma rápida e automática.
 
-💬 Atendimento ao Cliente: Identifica o problema do usuário, oferece soluções automáticas e, se necessário, redireciona para um atendente humano.
+Atendimento ao Cliente: Identifica o problema do usuário, oferece soluções automáticas e, se necessário, redireciona para um atendente humano.
 
-🌟 Pesquisa de Satisfação: Coleta feedback do usuário para a melhoria contínua do serviço.
+Pesquisa de Satisfação: Coleta feedback do usuário para a melhoria contínua do serviço.
 
-🔄 Otimização para Funcionários: Filtra as demandas, direcionando apenas os casos mais complexos para os atendentes, que têm acesso rápido ao histórico do cliente.
+Otimização para Funcionários: Filtra as demandas, direcionando apenas os casos mais complexos para os atendentes, que têm acesso rápido ao histórico do cliente.
 
-📋 Backlog do Produto (Histórias de Usuário)
+Backlog do Produto (Histórias de Usuário)
+
 
 🛠️ Especificação Técnica
 
