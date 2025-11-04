@@ -1,16 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- */
+public static void main(String[] args) {
 
-package com.mycompany.easybackend;
-
-/**
- *
- * @author emers
- */
-public class Easybackend {
-
-    public static void main(String[] args) {
-        System.out.println("Hello World!");
-    }
 }
