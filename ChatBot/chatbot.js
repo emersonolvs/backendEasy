@@ -1,4 +1,3 @@
-
 const qrcode = require('qrcode-terminal');
 const { Client, Buttons, List, MessageMedia } = require('whatsapp-web.js'); 
 const client = new Client();
@@ -25,8 +24,9 @@ client.on('message', async msg => {
     const endHour = 22;
 
     if (hour < startHour || hour >= endHour) { 
-        await client.sendMessage(msg.from, 'Olá! No momento nosso atendimento está offline. Nosso horário é das 08:00 às 22:00.');
+        await client.sendMessage(msg.from, 'Olá! 👋 Nosso atendimento funciona das 08:00 às 22:00. No momento, estamos offline, mas retornaremos o contato assim que possível dentro desse horário. Obrigado pela compreensão!');
         await delay(3000);
+        const chat = await msg.getChat(); 
         await chat.sendStateTyping();
         await delay(3000);
         return;
@@ -40,7 +40,7 @@ client.on('message', async msg => {
         await delay(3000);
         const contact = await msg.getContact();
         const name = contact.pushname || 'amigo';
-        await client.sendMessage(msg.from, 'Olá ' + name.split(" ")[0] + ', sou assistente virtual do Kauhãn, por favor escolha um número: \n\n1 - Consulta de Saldo\n2 - Status de pedido\n3 - Horário de funcionamento\n4 - Políticas da Empresa\n5 - Outras perguntas');
+        await client.sendMessage(msg.from, 'Olá, ' + name.split(" ")[0] + '! 👋 Eu sou o assistente virtual do Kauhãn. Como posso te ajudar hoje? \n\nPor favor, digite o número da opção desejada:\n\n*1* - Consultar Saldo\n*2* - Verificar Status de Pedido\n*3* - Horário de Funcionamento\n*4* - Políticas da Empresa\n*5* - Outras Dúvidas');
     }
 
     if (msg.body.match(/(menu|Menu|dia|tarde|noite|oi|Oi|Olá|olá|ola|Ola|ajuda|gostaria|hello)/i) && msg.from.endsWith('@c.us')) {
@@ -51,8 +51,8 @@ client.on('message', async msg => {
         await chat.sendStateTyping();
         await delay(3000);
         const contact = await msg.getContact();
-        const name = contact.pushname;
-        await client.sendMessage(msg.from, 'Olá! ' + name.split(" ")[0] + ', sou assistente virtual do kauhãn, por favor escolha um numero: \n\n1 - Consulta de Saldo\n2 - Status de pedido\n3 - Horario de funcionamento\n4 - Politicas da Empresa\n5 - Outras perguntas');
+        const name = contact.pushname || 'amigo';
+        await client.sendMessage(msg.from, 'Olá, ' + name.split(" ")[0] + '! 👋 Eu sou o assistente virtual do Kauhãn. Como posso te ajudar hoje? \n\nPor favor, digite o número da opção desejada:\n\n*1* - Consultar Saldo\n*2* - Verificar Status de Pedido\n*3* - Horário de Funcionamento\n*4* - Políticas da Empresa\n*5* - Outras Dúvidas');
         await delay(3000);
         await chat.sendStateTyping();
         await delay(5000);
@@ -68,12 +68,12 @@ client.on('message', async msg => {
         await delay(3000);
         await chat.sendStateTyping();
         await delay(3000);
-        await client.sendMessage(msg.from, 'voce selecionou a consulta de saldo:');
+        await client.sendMessage(msg.from, 'Você selecionou: *1 - Consultar Saldo*.');
 
         await delay(3000);
         await chat.sendStateTyping();
         await delay(3000);
-        await client.sendMessage(msg.from, 'seus dados são esses:');
+        await client.sendMessage(msg.from, 'Aqui estão os dados da sua consulta:');
 
         await delay(3000);
         await chat.sendStateTyping();
@@ -90,12 +90,12 @@ client.on('message', async msg => {
         await delay(3000);
         await chat.sendStateTyping();
         await delay(3000);
-        await client.sendMessage(msg.from, 'voce selecionou Status de pedido');
+        await client.sendMessage(msg.from, 'Você selecionou: *2 - Verificar Status de Pedido*.');
 
         await delay(3000);
         await chat.sendStateTyping();
         await delay(3000);
-        await client.sendMessage(msg.from, 'Status do seu pedido está:');
+        await client.sendMessage(msg.from, 'Aqui está o status mais recente do seu pedido: [Insira o status aqui]');
     }
 
     if (msg.body !== null && msg.body === '3' && msg.from.endsWith('@c.us')) {
@@ -105,12 +105,12 @@ client.on('message', async msg => {
         await delay(3000);
         await chat.sendStateTyping();
         await delay(3000);
-        await client.sendMessage(msg.from, 'voce selecionou Horários de funcionamento');
+        await client.sendMessage(msg.from, 'Você selecionou: *3 - Horário de Funcionamento*.');
 
         await delay(3000);
         await chat.sendStateTyping();
         await delay(3000);
-        await client.sendMessage(msg.from, 'nosso horario de funcionamento é das *08:00am* as *20:00*');
+        await client.sendMessage(msg.from, 'Nosso horário de atendimento é todos os dias, das *08:00* às *22:00*.');
 
     }
 
@@ -120,13 +120,13 @@ client.on('message', async msg => {
         await delay(3000);
         await chat.sendStateTyping();
         await delay(3000);
-        await client.sendMessage(msg.from, 'voce selecionou Politicas da empresa');
+        await client.sendMessage(msg.from, 'Você selecionou: *4 - Políticas da Empresa*.');
 
 
         await delay(3000);
         await chat.sendStateTyping();
         await delay(3000);
-        await client.sendMessage(msg.from, 'a politica da empresa easy.....');
+        await client.sendMessage(msg.from, 'Aqui estão as políticas da empresa Easy: [Complete com o texto das políticas]');
 
 
     }
@@ -137,7 +137,6 @@ client.on('message', async msg => {
         await delay(3000);
         await chat.sendStateTyping();
         await delay(3000);
-        await client.sendMessage(msg.from, 'Se você tiver outras dúvidas ou precisar de mais informações, por favor, fale aqui nesse whatsapp ou visite nosso site: ');
 
 
     }
