@@ -137,6 +137,7 @@ client.on('message', async msg => {
         await delay(3000);
         await chat.sendStateTyping();
         await delay(3000);
+        await client.sendMessage(msg.from, 'Para outras dúvidas ou mais informações, por favor, envie sua pergunta aqui mesmo ou visite nosso site: [Seu link do site aqui]');
 
 
     }
