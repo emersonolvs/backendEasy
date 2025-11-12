@@ -40,7 +40,7 @@ client.on('message', async msg => {
         await delay(3000);
         const contact = await msg.getContact();
         const name = contact.pushname || 'amigo';
-        await client.sendMessage(msg.from, 'Olá, ' + name.split(" ")[0] + '! 👋 Eu sou o assistente virtual do Kauhãn. Como posso te ajudar hoje? \n\nPor favor, digite o número da opção desejada:\n\n*1* - Consultar Saldo\n*2* - Verificar Status de Pedido\n*3* - Horário de Funcionamento\n*4* - Políticas da Empresa\n*5* - Outras Dúvidas');
+        await client.sendMessage(msg.from, 'Olá, ' + name.split(" ")[0] + '! 👋 Eu sou o assistente virtual da Empresa EASY. Como posso te ajudar hoje? \n\nPor favor, digite o número da opção desejada:\n\n*1* - Consultar Saldo\n*2* - Verificar Status de Pedido\n*3* - Horário de Funcionamento\n*4* - Políticas da Empresa\n*5* - Outras Dúvidas');
     }
 
     if (msg.body.match(/(menu|Menu|dia|tarde|noite|oi|Oi|Olá|olá|ola|Ola|ajuda|gostaria|hello)/i) && msg.from.endsWith('@c.us')) {
@@ -52,7 +52,7 @@ client.on('message', async msg => {
         await delay(3000);
         const contact = await msg.getContact();
         const name = contact.pushname || 'amigo';
-        await client.sendMessage(msg.from, 'Olá, ' + name.split(" ")[0] + '! 👋 Eu sou o assistente virtual do Kauhãn. Como posso te ajudar hoje? \n\nPor favor, digite o número da opção desejada:\n\n*1* - Consultar Saldo\n*2* - Verificar Status de Pedido\n*3* - Horário de Funcionamento\n*4* - Políticas da Empresa\n*5* - Outras Dúvidas');
+        await client.sendMessage(msg.from, 'Olá, ' + name.split(" ")[0] + '! 👋 Eu sou o assistente virtual da Empresa EASY. Como posso te ajudar hoje? \n\nPor favor, digite o número da opção desejada:\n\n*1* - Consultar Saldo\n*2* - Verificar Status de Pedido\n*3* - Horário de Funcionamento\n*4* - Políticas da Empresa\n*5* - Outras Dúvidas');
         await delay(3000);
         await chat.sendStateTyping();
         await delay(5000);
@@ -78,7 +78,7 @@ client.on('message', async msg => {
         await delay(3000);
         await chat.sendStateTyping();
         await delay(3000);
-        await client.sendMessage(msg.from, 'Link para os flamenguista chorarem: https://youtu.be/bVsRK1AbDaw?si=U3zpOuTsC1c2Oo5c');
+        await client.sendMessage(msg.from, 'Saldo');
 
 
     }
@@ -95,7 +95,7 @@ client.on('message', async msg => {
         await delay(3000);
         await chat.sendStateTyping();
         await delay(3000);
-        await client.sendMessage(msg.from, 'Aqui está o status mais recente do seu pedido: [Insira o status aqui]');
+        await client.sendMessage(msg.from, 'Aqui está o status mais recente do seu pedido: [Inserir o status aqui]');
     }
 
     if (msg.body !== null && msg.body === '3' && msg.from.endsWith('@c.us')) {
@@ -126,7 +126,7 @@ client.on('message', async msg => {
         await delay(3000);
         await chat.sendStateTyping();
         await delay(3000);
-        await client.sendMessage(msg.from, 'Aqui estão as políticas da empresa Easy: [Complete com o texto das políticas]');
+        await client.sendMessage(msg.from, 'Aqui estão as políticas da empresa Easy: [Completar texto]');
 
 
     }
