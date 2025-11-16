@@ -1,4 +1,3 @@
-
 DROP TABLE IF EXISTS `Feedback`;
 DROP TABLE IF EXISTS `Notificacoes`;
 DROP TABLE IF EXISTS `ResumoConversa`;
@@ -12,7 +11,6 @@ DROP TABLE IF EXISTS `Solicitacao`;
 DROP TABLE IF EXISTS `Usuario`;
 DROP TABLE IF EXISTS `Empresa`;
 DROP TABLE IF EXISTS `Administrador`;
-
 
 CREATE TABLE `Administrador` (
     `id_admin` INTEGER NOT NULL AUTO_INCREMENT,
@@ -46,8 +44,7 @@ CREATE TABLE `Usuario` (
     PRIMARY KEY (`id_user`),
     KEY `fk_admempresa_empresa` (`id_empresa`),
     CONSTRAINT `fk_admempresa_empresa` FOREIGN KEY (`id_empresa`) REFERENCES `Empresa` (`id_empresa`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `Solicitacao` (
     `id_solicitacao` INTEGER NOT NULL AUTO_INCREMENT,
@@ -68,7 +65,6 @@ CREATE TABLE `ConfiguracaoERP` (
     PRIMARY KEY (`id_config`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-
 CREATE TABLE `ContasPagar` (
     `id_conta` INTEGER NOT NULL AUTO_INCREMENT,
     `descricao` VARCHAR(191) NOT NULL,
@@ -84,7 +80,6 @@ CREATE TABLE `ContasPagar` (
     CONSTRAINT `fk_contas_empresa` FOREIGN KEY (`id_empresa`) REFERENCES `Empresa` (`id_empresa`) ON DELETE CASCADE
 );
 
-
 CREATE TABLE `Receitas` (
     `id_receita` INTEGER NOT NULL AUTO_INCREMENT,
     `descricao` VARCHAR(191) NOT NULL,
@@ -98,7 +93,6 @@ CREATE TABLE `Receitas` (
     CONSTRAINT `fk_receitas_empresa` FOREIGN KEY (`id_empresa`) REFERENCES `Empresa` (`id_empresa`) ON DELETE CASCADE
 );
 
--- CreateTable
 CREATE TABLE `ReceitasOperacionais` (
     `id_receita_op` INTEGER NOT NULL AUTO_INCREMENT,
     `descricao` VARCHAR(191) NOT NULL,
@@ -112,7 +106,6 @@ CREATE TABLE `ReceitasOperacionais` (
     CONSTRAINT `fk_receitasop_empresa` FOREIGN KEY (`id_empresa`) REFERENCES `Empresa` (`id_empresa`) ON DELETE CASCADE
 );
 
-
 CREATE TABLE `CustosVariaveis` (
     `id_custo` INTEGER NOT NULL AUTO_INCREMENT,
     `descricao` VARCHAR(191) NOT NULL,
@@ -125,7 +118,6 @@ CREATE TABLE `CustosVariaveis` (
     KEY `fk_custos_empresa` (`id_empresa`),
     CONSTRAINT `fk_custos_empresa` FOREIGN KEY (`id_empresa`) REFERENCES `Empresa` (`id_empresa`) ON DELETE CASCADE
 );
-
 
 CREATE TABLE `DespesasFixas` (
     `id_despesa` INTEGER NOT NULL AUTO_INCREMENT,
@@ -141,7 +133,6 @@ CREATE TABLE `DespesasFixas` (
     CONSTRAINT `fk_despesas_empresa` FOREIGN KEY (`id_empresa`) REFERENCES `Empresa` (`id_empresa`) ON DELETE CASCADE
 );
 
-
 CREATE TABLE `ResumoConversa` (
     `id_resumo` INTEGER NOT NULL AUTO_INCREMENT,
     `id_usuario` INTEGER NOT NULL,
@@ -152,7 +143,6 @@ CREATE TABLE `ResumoConversa` (
     KEY `fk_resumo_usuario` (`id_usuario`),
     CONSTRAINT `fk_resumo_usuario` FOREIGN KEY (`id_usuario`) REFERENCES `Usuario` (`id_user`) ON DELETE CASCADE
 );
-
 
 CREATE TABLE `Notificacoes` (
     `id_notificacao` INTEGER NOT NULL AUTO_INCREMENT,
@@ -167,7 +157,6 @@ CREATE TABLE `Notificacoes` (
     CONSTRAINT `fk_notificacoes_usuario` FOREIGN KEY (`id_usuario`) REFERENCES `Usuario` (`id_user`) ON DELETE CASCADE
 );
 
-
 CREATE TABLE `Feedback` (
     `id_feedback` INTEGER NOT NULL AUTO_INCREMENT,
     `id_usuario` INTEGER NOT NULL,
@@ -179,8 +168,10 @@ CREATE TABLE `Feedback` (
     CONSTRAINT `fk_feedback_usuario` FOREIGN KEY (`id_usuario`) REFERENCES `Usuario` (`id_user`) ON DELETE CASCADE
 );
 
+ALTER TABLE `Solicitacao`
+ADD CONSTRAINT `Solicitacao_id_usuario_fkey`
+FOREIGN KEY (`id_usuario`) REFERENCES `Usuario` (`id_user`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
-ALTER TABLE `Solicitacao` ADD CONSTRAINT `Solicitacao_id_usuario_fkey` FOREIGN KEY (`id_usuario`) REFERENCES `Usuario` (`id_user`) ON DELETE RESTRICT ON UPDATE CASCADE;
-
-
-ALTER TABLE `ConfiguracaoERP` ADD CONSTRAINT `ConfiguracaoERP_id_empresa_fkey` FOREIGN KEY (`id_empresa`) REFERENCES `Empresa` (`id_empresa`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `ConfiguracaoERP`
+ADD CONSTRAINT `ConfiguracaoERP_id_empresa_fkey`
+FOREIGN KEY (`id_empresa`) REFERENCES `Empresa` (`id_empresa`) ON DELETE RESTRICT ON UPDATE CASCADE;
