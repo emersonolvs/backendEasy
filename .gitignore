@@ -1,0 +1,6 @@
+# Ignora as pastas do projeto ChatBot
+ChatBot/node_modules/
+ChatBot/.wwebjs_cache/
+
+# Ignora pastas node_modules que possam estar em outros locais
+node_modules/

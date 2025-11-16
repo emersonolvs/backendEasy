@@ -64,7 +64,7 @@ client.on('message', async msg => {
             await chat.sendStateTyping();
             await delay(3000);
             
-            await client.sendMessage(user, 'Certo! Você está na área *Financeira*.\n\nEscolha uma das opções abaixo:\n\n*1* - Relatório Completo\n*2* - Detalhamento Financeiro');
+            await client.sendMessage(user, 'Certo! Você está na área *Financeira*.\n\nEscolha uma das opções abaixo:\n\n*1* - Relatório Completo\n*2* - Detalhamento Financeiro\n*3* - Voltar ao menu principal');
 
         } else if (msg.body !== null && msg.body === '2' && msg.from.endsWith('@c.us')) {
             await delay(3000);
@@ -113,7 +113,7 @@ client.on('message', async msg => {
             await delay(3000);
             await chat.sendStateTyping();
             await delay(3000);
-            await client.sendMessage(user, 'Aqui estão seus dados:\n\n- *Contas a Pagar:* [Valor]\n- *Contas Vencidas:* [Valor]\n  - (Vencidas nos últimos 7 dias: [Valor])\n- *Total Recebido:* [Valor]\n- *Total Pago:* [Valor]');
+            await client.sendMessage(user, 'Aqui estão seus dados:\n\n- *Contas a Pagar:* [Valor]\n- *Contas Vencidas:* [Valor]\n  - (Vencidas nos últimos 7 dias: [Valor])\n- *Total Recebido:* [Valor]\n- *Total Pago:* [Valor]');
             
             await delay(2000);
             await client.sendMessage(user, 'Para uma nova consulta, digite *Menu*.');
@@ -124,47 +124,70 @@ client.on('message', async msg => {
             await delay(3000);
             await chat.sendStateTyping();
             await delay(3000);
-            await client.sendMessage(user, 'Qual detalhamento financeiro você gostaria de ver?\n\n*1* - Custos Variáveis\n*2* - Receitas Operacionais\n*3* - Resultado Operacional\n*4* - Despesas Fixas');
+            await client.sendMessage(user, 'Qual detalhamento financeiro você gostaria de ver?\n\n*1* - Custos Variáveis\n*2* - Receitas Operacionais\n*3* - Resultado Operacional\n*4* - Despesas Fixas\n*5* - Voltar');
+        
+        } else if (msg.body !== null && msg.body === '3' && msg.from.endsWith('@c.us')) {
+            delete userState[user];
+            await delay(1000);
+            await client.sendMessage(user, 'Voltando... Por favor, digite *Menu* para ver as opções novamente.');
         
         } else {
             await delay(1000);
-            await client.sendMessage(user, 'Opção inválida. Por favor, escolha *1* ou *2*.\n\nPara sair, digite *Menu*.');
+            await client.sendMessage(user, 'Opção inválida. Por favor, escolha *1*, *2* ou *3* (Voltar).\n\nPara sair, digite *Menu*.');
         }
 
     } else if (currentState === 'menu_detalhamento') {
 
-        delete userState[user];
-
         if (msg.body !== null && msg.body === '1' && msg.from.endsWith('@c.us')) {
+            delete userState[user];
             await delay(3000);
             await chat.sendStateTyping();
             await delay(3000);
             await client.sendMessage(user, 'Detalhes de *Custos Variáveis*: [Informação aqui]');
+            await delay(2000);
+            await client.sendMessage(user, 'Consulta finalizada. Para ver outras opções, digite *Menu*.');
             
         } else if (msg.body !== null && msg.body === '2' && msg.from.endsWith('@c.us')) {
+            delete userState[user];
             await delay(3000);
             await chat.sendStateTyping();
             await delay(3000);
             await client.sendMessage(user, 'Detalhes de *Receitas Operacionais*: [Informação aqui]');
+            await delay(2000);
+            await client.sendMessage(user, 'Consulta finalizada. Para ver outras opções, digite *Menu*.');
 
         } else if (msg.body !== null && msg.body === '3' && msg.from.endsWith('@c.us')) {
+            delete userState[user];
             await delay(3000);
             await chat.sendStateTyping();
             await delay(3000);
             await client.sendMessage(user, 'Detalhes de *Resultado Operacional*: [Informação aqui]');
+            await delay(2000);
+            await client.sendMessage(user, 'Consulta finalizada. Para ver outras opções, digite *Menu*.');
 
         } else if (msg.body !== null && msg.body === '4' && msg.from.endsWith('@c.us')) {
+            delete userState[user];
             await delay(3000);
             await chat.sendStateTyping();
             await delay(3000);
             await client.sendMessage(user, 'Detalhes de *Despesas Fixas*: [Informação aqui]');
+            await delay(2000);
+            await client.sendMessage(user, 'Consulta finalizada. Para ver outras opções, digite *Menu*.');
             
+        } else if (msg.body !== null && msg.body === '5' && msg.from.endsWith('@c.us')) {
+            
+            userState[user] = 'menu_financeiro'; 
+            
+            await delay(1000);
+            await chat.sendStateTyping();
+            await delay(1000);
+            
+            
+            await client.sendMessage(user, 'Certo! Você está na área *Financeira*.\n\nEscolha uma das opções abaixo:\n\n*1* - Relatório Completo\n*2* - Detalhamento Financeiro\n*3* - Voltar ao menu principal');
+        
         } else {
             await delay(1000);
-            await client.sendMessage(user, 'Opção inválida.');
+            await client.sendMessage(user, 'Opção inválida. Por favor, escolha de *1* a *4*, ou *5* para Voltar.\n\nPara sair, digite *Menu*.');
         }
-
-        await delay(2000);
-        await client.sendMessage(user, 'Consulta finalizada. Para ver outras opções, digite *Menu*.');
     }
 });
