@@ -4,3 +4,18 @@ ChatBot/.wwebjs_cache/
 
 # Ignora pastas node_modules que possam estar em outros locais
 node_modules/
+
+# Dependências
+node_modules/
+
+# Sessão do WhatsApp (SEGURANÇA CRÍTICA)
+.wwebjs_auth/
+.wwebjs_cache/
+/ChatBot/.wwebjs_cache
+/ChatBot/.wwebjs_auth
+ChatBot/.wwebjs_cache/2.3000.1028798214.html
+
+# Logs e arquivos de sistema
+npm-debug.log*
+.DS_Store
+Thumbs.db

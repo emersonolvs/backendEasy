@@ -1,6 +1,26 @@
 const qrcode = require('qrcode-terminal');
-const { Client, Buttons, List, MessageMedia } = require('whatsapp-web.js');
-const client = new Client();
+const { Client, LocalAuth } = require('whatsapp-web.js');
+const axios = require('axios');
+
+const client = new Client({
+    authStrategy: new LocalAuth(),
+    puppeteer: {
+        headless: true,
+        args: [
+            '--no-sandbox',
+            '--disable-setuid-sandbox',
+            '--disable-dev-shm-usage',
+            '--disable-accelerated-2d-canvas',
+            '--no-first-run',
+            '--no-zygote',
+            '--single-process',
+            '--disable-gpu'
+        ]
+    }
+});
+
+const OMIE_APP_KEY = '6887695778964'; 
+const OMIE_APP_SECRET = '9aa89482d2cc134634cbbd4f45c2cf3a';
 
 client.on('qr', qr => {
     qrcode.generate(qr, { small: true });
@@ -13,181 +33,154 @@ client.on('ready', () => {
 client.initialize();
 
 const delay = ms => new Promise(res => setTimeout(res, ms));
-
 const userState = {};
 
-client.on('message', async msg => {
-    const now = new Date();
-    const hour = now.getHours();
+async function consultarDadosFinanceiros() {
+    try {
+        const body = {
+            call: "ListarMovimentos",
+            app_key: OMIE_APP_KEY,
+            app_secret: OMIE_APP_SECRET,
+            param: [{
+                nPagina: 1,
+                nRegPorPagina: 500,
+                apenas_titulos_em_aberto: "N"
+            }]
+        };
 
-    const startHour = 8;
-    const endHour = 22;
+        const response = await axios.post('https://app.omie.com.br/api/v1/financas/mf/', body);
+        
+        if (!response.data || !response.data.movimentos) {
+            return null;
+        }
 
-    if (hour < startHour || hour >= endHour) {
-        await client.sendMessage(msg.from, '👋 Nosso atendimento funciona das 08:00 às 22:00. No momento, estamos offline, mas retornaremos o contato assim que possível dentro desse horário. Obrigado pela compreensão!');
-        await delay(3000);
-        const chat = await msg.getChat();
-        await chat.sendStateTyping();
-        await delay(3000);
-        return;
+        const movimentos = response.data.movimentos;
+        let resumo = {
+            totalRecebido: 0,
+            totalPago: 0,
+            custosVariaveis: 0,
+            receitasOperacionais: 0,
+            contasPagar: 0,
+            contasVencidas: 0
+        };
+
+        const hoje = new Date();
+
+        movimentos.forEach(mov => {
+            const valor = mov.nValorTitulo;
+            const categoria = mov.detalhes.cCodCateg || "";
+            const status = mov.detalhes.cStatus;
+
+            if (status === 'RECEBIDO' || status === 'PAGO') {
+                if (mov.detalhes.cNatureza === 'R') {
+                    resumo.totalRecebido += valor;
+                    if (categoria.startsWith('1.0')) {
+                        resumo.receitasOperacionais += valor;
+                    }
+                }
+                
+                if (mov.detalhes.cNatureza === 'P') {
+                    resumo.totalPago += valor;
+                    if (categoria.startsWith('2.1')) {
+                        resumo.custosVariaveis += valor;
+                    }
+                }
+            }
+
+            if (mov.detalhes.cNatureza === 'P' && status !== 'PAGO' && status !== 'CANCELADO') {
+                resumo.contasPagar += valor;
+                const dataVencimento = new Date(mov.detalhes.dDtVenc.split('/').reverse().join('-'));
+                if (dataVencimento < hoje) {
+                    resumo.contasVencidas += valor;
+                }
+            }
+        });
+
+        return resumo;
+
+    } catch (error) {
+        console.error("Erro na API Omie:", error);
+        return null;
     }
+}
 
+client.on('message', async msg => {
     const chat = await msg.getChat();
     const user = msg.from; 
 
-    if (msg.body.match(/(menu|Menu|dia|tarde|noite|oi|Oi|Olá|olá|ola|Ola|ajuda|gostaria|hello)/i) && msg.from.endsWith('@c.us')) {
-        
+    if (msg.body.match(/(teste)/i) && msg.from.endsWith('@c.us')) {
         delete userState[user]; 
-
-        await delay(2000);
-        await chat.sendStateTyping();
-        await delay(2000);
+        await delay(1000);
         const contact = await msg.getContact();
         const name = contact.pushname || 'amigo';
-        
-        await client.sendMessage(user, 'Olá, ' + name.split(" ")[0] + '! 👋 Eu sou a IZI, assistente virtual da Empresa EASY. Como posso te ajudar hoje? \n\nPor favor, digite o número da opção do serviço desejado:\n\n*1* - Consultar relatórios, contas e informações financeiras\n*2* - Dúvidas frequentes\n*3* - Horário de atendimento\n*4* - Falar com suporte');
-        
-        await delay(3000);
-        await chat.sendStateTyping();
-        await delay(5000);
+        await client.sendMessage(user, `Olá, ${name}! 👋 Sou a IZI assistente virtual da EASY. Como posso te ajudar hoje? Envie o número de acordo com a opção desejada.\n\n1️⃣ - Relatórios Financeiros\n2️⃣ - Dúvidas\n3️⃣ - Horário de Funcionamento\n4️⃣ - Suporte`);
         return; 
     }
 
     const currentState = userState[user];
 
     if (!currentState) {
-
-        if (msg.body !== null && msg.body === '1' && msg.from.endsWith('@c.us')) {
+        if (msg.body === '1') {
             userState[user] = 'menu_financeiro';
-
-            await delay(3000);
-            await chat.sendStateTyping();
-            await delay(3000);
+            await client.sendMessage(user, 'Consultando suas informações... ⏳');
             
-            await client.sendMessage(user, 'Certo! Você está na área *Financeira*.\n\nEscolha uma das opções abaixo:\n\n*1* - Relatório Completo\n*2* - Detalhamento Financeiro\n*3* - Voltar ao menu principal');
+            const dados = await consultarDadosFinanceiros();
 
-        } else if (msg.body !== null && msg.body === '2' && msg.from.endsWith('@c.us')) {
-            await delay(3000);
-            await chat.sendStateTyping();
-            await delay(3000);
-            await client.sendMessage(user, 'Você selecionou: *2 - Dúvidas Frequentes*.');
+            if (dados) {
+                userState[user + '_dados'] = dados;
 
-            await delay(3000);
-            await chat.sendStateTyping();
-            await delay(3000);
-            await client.sendMessage(user, 'Aqui está a nossa lista de dúvidas: [Insira as dúvidas aqui]');
-            
-        } else if (msg.body !== null && msg.body === '3' && msg.from.endsWith('@c.us')) {
-            await delay(3000);
-            await chat.sendStateTyping();
-            await delay(3000);
-            await client.sendMessage(user, 'Você selecionou: *3 - Horário de atendimento*.');
+                const texto = `📊 *Relatório Financeiro Atualizado*\n\n` +
+                              `💰 *Total Recebido:* R$ ${dados.totalRecebido.toFixed(2)}\n` +
+                              `VX *Total Pago:* R$ ${dados.totalPago.toFixed(2)}\n` +
+                              `⚠️ *A Pagar (Aberto):* R$ ${dados.contasPagar.toFixed(2)}\n` +
+                              `rf *Vencidas:* R$ ${dados.contasVencidas.toFixed(2)}\n\n` +
+                              `*1* - Relatório Completo (Ver acima)\n*2* - Detalhamento (Custos/Receitas)\n*3* - Voltar`;
+                
+                await client.sendMessage(user, texto);
+            } else {
+                await client.sendMessage(user, 'Erro ao conectar com o sistema financeiro. Tente mais tarde ou entre em contato diretamente com EASY.');
+                delete userState[user];
+            }
 
-            await delay(3000);
-            await chat.sendStateTyping();
-            await delay(3000);
-            await client.sendMessage(user, 'Nosso horário de atendimento é todos os dias, das *08:00* às *22:00*.');
-
-        } else if (msg.body !== null && msg.body === '4' && msg.from.endsWith('@c.us')) {
-            await delay(3000);
-            await chat.sendStateTyping();
-            await delay(3000);
-            await client.sendMessage(user, 'Você selecionou: *4 - Falar com suporte*.\n\nPor favor, envie sua mensagem ou clique no link para falar com um atendente: https://api.whatsapp.com/send?phone=5579981310201&text=OI!Gostaria%20de%20Mais%20Informa%C3%A7%C3%B5es%20Sobre%20o%20M%C3%A9todo%20EASY!');
-        
-        } else {
-            await delay(1000);
-            await client.sendMessage(user, 'Desculpe, não entendi. Por favor, digite *Menu* para ver as opções novamente.');
+        } else if (msg.body === '2') {
+             await client.sendMessage(user, 'Lista de dúvidas...');
+        } else if (msg.body === '3') {
+             await client.sendMessage(user, 'Atendimento das 08:00 às 22:00.');
+        } else if (msg.body === '4') {
+             await client.sendMessage(user, 'Link suporte...');
         }
 
     } else if (currentState === 'menu_financeiro') {
+        const dados = userState[user + '_dados']; 
 
-        if (msg.body !== null && msg.body === '1' && msg.from.endsWith('@c.us')) {
-            
-            delete userState[user]; 
-            
-            await delay(3000);
-            await chat.sendStateTyping();
-            await delay(3000);
-            await client.sendMessage(user, 'Ok, gerando seu *Relatório Completo*...');
-
-            await delay(3000);
-            await chat.sendStateTyping();
-            await delay(3000);
-            await client.sendMessage(user, 'Aqui estão seus dados:\n\n- *Contas a Pagar:* [Valor]\n- *Contas Vencidas:* [Valor]\n  - (Vencidas nos últimos 7 dias: [Valor])\n- *Total Recebido:* [Valor]\n- *Total Pago:* [Valor]');
-            
-            await delay(2000);
-            await client.sendMessage(user, 'Para uma nova consulta, digite *Menu*.');
-
-        } else if (msg.body !== null && msg.body === '2' && msg.from.endsWith('@c.us')) {
+        if (msg.body === '1') {
+            await client.sendMessage(user, 'Os dados completos já estão na mensagem anterior! 👆');
+        
+        } else if (msg.body === '2') {
             userState[user] = 'menu_detalhamento';
-            
-            await delay(3000);
-            await chat.sendStateTyping();
-            await delay(3000);
-            await client.sendMessage(user, 'Qual detalhamento financeiro você gostaria de ver?\n\n*1* - Custos Variáveis\n*2* - Receitas Operacionais\n*3* - Resultado Operacional\n*4* - Despesas Fixas\n*5* - Voltar');
+            await client.sendMessage(user, `🔎 *Detalhamento por Categoria*\n\n*1* - Custos Variáveis (Cód 2.1)\n*2* - Receitas Operacionais (Cód 1.0)\n*3* - Voltar`);
         
-        } else if (msg.body !== null && msg.body === '3' && msg.from.endsWith('@c.us')) {
+        } else if (msg.body === '3') {
             delete userState[user];
-            await delay(1000);
-            await client.sendMessage(user, 'Voltando... Por favor, digite *Menu* para ver as opções novamente.');
-        
-        } else {
-            await delay(1000);
-            await client.sendMessage(user, 'Opção inválida. Por favor, escolha *1*, *2* ou *3* (Voltar).\n\nPara sair, digite *Menu*.');
+            await client.sendMessage(user, 'Voltando ao início...');
         }
 
     } else if (currentState === 'menu_detalhamento') {
+        const dados = userState[user + '_dados'];
 
-        if (msg.body !== null && msg.body === '1' && msg.from.endsWith('@c.us')) {
+        if (msg.body === '1') {
+            await client.sendMessage(user, `📉 *Custos Variáveis (2.1)*\nValor Total: R$ ${dados.custosVariaveis.toFixed(2)}`);
             delete userState[user];
-            await delay(3000);
-            await chat.sendStateTyping();
-            await delay(3000);
-            await client.sendMessage(user, 'Detalhes de *Custos Variáveis*: [Informação aqui]');
-            await delay(2000);
-            await client.sendMessage(user, 'Consulta finalizada. Para ver outras opções, digite *Menu*.');
-            
-        } else if (msg.body !== null && msg.body === '2' && msg.from.endsWith('@c.us')) {
-            delete userState[user];
-            await delay(3000);
-            await chat.sendStateTyping();
-            await delay(3000);
-            await client.sendMessage(user, 'Detalhes de *Receitas Operacionais*: [Informação aqui]');
-            await delay(2000);
-            await client.sendMessage(user, 'Consulta finalizada. Para ver outras opções, digite *Menu*.');
+            await client.sendMessage(user, 'Consulta finalizada. Digite *Menu* para voltar.');
 
-        } else if (msg.body !== null && msg.body === '3' && msg.from.endsWith('@c.us')) {
+        } else if (msg.body === '2') {
+            await client.sendMessage(user, `📈 *Receitas Operacionais (1.0)*\nValor Total: R$ ${dados.receitasOperacionais.toFixed(2)}`);
             delete userState[user];
-            await delay(3000);
-            await chat.sendStateTyping();
-            await delay(3000);
-            await client.sendMessage(user, 'Detalhes de *Resultado Operacional*: [Informação aqui]');
-            await delay(2000);
-            await client.sendMessage(user, 'Consulta finalizada. Para ver outras opções, digite *Menu*.');
+            await client.sendMessage(user, 'Consulta finalizada. Digite *Menu* para voltar.');
 
-        } else if (msg.body !== null && msg.body === '4' && msg.from.endsWith('@c.us')) {
-            delete userState[user];
-            await delay(3000);
-            await chat.sendStateTyping();
-            await delay(3000);
-            await client.sendMessage(user, 'Detalhes de *Despesas Fixas*: [Informação aqui]');
-            await delay(2000);
-            await client.sendMessage(user, 'Consulta finalizada. Para ver outras opções, digite *Menu*.');
-            
-        } else if (msg.body !== null && msg.body === '5' && msg.from.endsWith('@c.us')) {
-            
-            userState[user] = 'menu_financeiro'; 
-            
-            await delay(1000);
-            await chat.sendStateTyping();
-            await delay(1000);
-            
-            
-            await client.sendMessage(user, 'Certo! Você está na área *Financeira*.\n\nEscolha uma das opções abaixo:\n\n*1* - Relatório Completo\n*2* - Detalhamento Financeiro\n*3* - Voltar ao menu principal');
-        
-        } else {
-            await delay(1000);
-            await client.sendMessage(user, 'Opção inválida. Por favor, escolha de *1* a *4*, ou *5* para Voltar.\n\nPara sair, digite *Menu*.');
+        } else if (msg.body === '3') {
+            userState[user] = 'menu_financeiro';
+            await client.sendMessage(user, 'Voltando para menu financeiro...');
         }
     }
 });
